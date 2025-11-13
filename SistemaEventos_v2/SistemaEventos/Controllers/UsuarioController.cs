@@ -138,7 +138,7 @@ namespace SistemaEventos.Controllers
         }
 
         [Authorize]
-        [HttpGet("Ping")] //7mo (solo para PRUEBAS)
+        [HttpGet("Ping")] //7mo (usar solo para PRUEBAS)
         public IActionResult Ping()
         {
             var idUsuario = HttpContext.Items["IdUsuario"]?.ToString();
