@@ -10,6 +10,6 @@ namespace Transversal.Models
 
         public string Mensaje { get; set; } = string.Empty;
 
-        public T Objeto { get; set; } = default!;
+        public T Valor { get; set; } = default!;
     }
 }

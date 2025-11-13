@@ -112,9 +112,9 @@ namespace SistemaEventos.Middleware
                 }
 
                 string newAccessToken
-                    = respuesta.Result.Objeto is null
+                    = respuesta.Result.Valor is null
                     ? accessToken
-                    : respuesta.Result.Objeto.AccessToken;
+                    : respuesta.Result.Valor.AccessToken;
 
                 //Cargar las cookies en el navegador del usuario (quedan actualizadas para la siguiente petición entrante)
                 //_cookies.SetCookieAccessToken(autorizacion.Result.Objeto.AccessToken);

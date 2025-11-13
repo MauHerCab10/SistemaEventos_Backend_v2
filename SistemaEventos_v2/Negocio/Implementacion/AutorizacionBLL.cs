@@ -239,9 +239,9 @@ namespace Negocio.Implementacion
             bool esExitoso = await GuardarHistorialRefreshTokenDeUsuario(historialRefreshToken.IdUsuario, historialRefreshToken.AccessToken, historialRefreshToken.RefreshToken, historialRefreshToken.FechaCreacion, historialRefreshToken.FechaExpiracion);
 
             if (esExitoso)
-                return new Respuesta<Usuario> { IsSuccess = true, Mensaje = "¡AccessToken y RefreshToken generados OK!", Objeto = new Usuario { IdUsuario = idUsuario, AccessToken = accessToken, RefreshToken = refreshToken } };
+                return new Respuesta<Usuario> { IsSuccess = true, Mensaje = "¡AccessToken y RefreshToken generados OK!", Valor = new Usuario { IdUsuario = idUsuario, AccessToken = accessToken, RefreshToken = refreshToken } };
             else
-                return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "¡Error al momento de generar el AccessToken y el RefreshToken!", Objeto = null! };
+                return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "¡Error al momento de generar el AccessToken y el RefreshToken!", Valor = null! };
         }
 
         //Actualiza ÚNICAMENTE el AccessToken con base en el RefreshToken encontrado
@@ -251,7 +251,7 @@ namespace Negocio.Implementacion
 
             await ActualizarHistorialRefreshTokenDeUsuario(historialEncontrado.IdHistorialToken, nuevoAccessToken);
 
-            return new Respuesta<Usuario> { IsSuccess = true, Mensaje = "¡AccessToken actualizado OK!", Objeto = new Usuario { AccessToken = nuevoAccessToken, RefreshToken = historialExistente.RefreshToken } };
+            return new Respuesta<Usuario> { IsSuccess = true, Mensaje = "¡AccessToken actualizado OK!", Valor = new Usuario { AccessToken = nuevoAccessToken, RefreshToken = historialExistente.RefreshToken } };
         }
 
         //Elimina todo el historial de Tokens del usuario encontrado

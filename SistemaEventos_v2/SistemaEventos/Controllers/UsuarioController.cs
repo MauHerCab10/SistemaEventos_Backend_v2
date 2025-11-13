@@ -50,16 +50,16 @@ namespace SistemaEventos.Controllers
             var resultado = await _usuario.AutenticarUsuario(usuario);
             if (resultado.IsSuccess)
             {
-                //_cookies.SetCookieAccessToken(resultado.Objeto.AccessToken);
-                _cookies.SetCookieRefreshToken(resultado.Objeto.RefreshToken);
+                //_cookies.SetCookieAccessToken(resultado.Valor.AccessToken);
+                _cookies.SetCookieRefreshToken(resultado.Valor.RefreshToken);
 
                 return Ok(new
                 {
                     isSuccess = resultado.IsSuccess,
                     mensaje = resultado.Mensaje,
-                    idUsuario = resultado.Objeto.IdUsuario,
-                    accessToken = resultado.Objeto.AccessToken,
-                    /*refreshToken = resultado.Objeto.RefreshToken*/
+                    idUsuario = resultado.Valor.IdUsuario,
+                    accessToken = resultado.Valor.AccessToken,
+                    /*refreshToken = resultado.Valor.RefreshToken*/
                 });
             }
             else
@@ -107,14 +107,14 @@ namespace SistemaEventos.Controllers
         //    if (resultado.IsSuccess)
         //    {
         //        // Cargar las cookies en el navegador del usuario
-        //        //_cookies.SetCookieAccessToken(resultado.Objeto.AccessToken);
-        //        _cookies.SetCookieRefreshToken(resultado.Objeto.RefreshToken);
+        //        //_cookies.SetCookieAccessToken(resultado.Valor.AccessToken);
+        //        _cookies.SetCookieRefreshToken(resultado.Valor.RefreshToken);
 
         //        return Ok(new 
         //        { 
         //            isSuccess = resultado.IsSuccess, 
         //            mensaje = resultado.Mensaje, 
-        //            accessToken = resultado.Objeto.AccessToken 
+        //            accessToken = resultado.Valor.AccessToken 
         //        });
         //    }
         //    else

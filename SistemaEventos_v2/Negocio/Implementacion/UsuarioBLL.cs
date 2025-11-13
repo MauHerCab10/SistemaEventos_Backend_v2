@@ -44,18 +44,18 @@ namespace Negocio.Implementacion
             {
                 Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
                 {
-                    Objeto = await _usuarioDAL.ConsultarUsuarioPorId(dtoUsuario.Email)
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorId(dtoUsuario.Email)
                 };
 
-                if (resultOperacion.Objeto != null)
+                if (resultOperacion.Valor != null)
                 {
-                    bool contrasenaValidada = _utilidades.VerificarContrasena(dtoUsuario.Contrasena, resultOperacion.Objeto.ContrasenaHash);
+                    bool contrasenaValidada = _utilidades.VerificarContrasena(dtoUsuario.Contrasena, resultOperacion.Valor.ContrasenaHash);
 
-                    if (!resultOperacion.Objeto.Confirmado && !resultOperacion.Objeto.Restablecer && !string.IsNullOrEmpty(resultOperacion.Objeto.ContrasenaHash))
+                    if (!resultOperacion.Valor.Confirmado && !resultOperacion.Valor.Restablecer && !string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
                     {
                         return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"Falta por confirmar su cuenta. Se le envió un correo de solicitud de confirmación a '{dtoUsuario.Email}'." };
                     }
-                    else if (resultOperacion.Objeto.Restablecer && !resultOperacion.Objeto.Confirmado && string.IsNullOrEmpty(resultOperacion.Objeto.ContrasenaHash))
+                    else if (resultOperacion.Valor.Restablecer && !resultOperacion.Valor.Confirmado && string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
                     {
                         return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"Se ha solicitado restablecer su cuenta. Favor revise la bandeja de su correo '{dtoUsuario.Email}'." };
                     }
@@ -66,7 +66,7 @@ namespace Negocio.Implementacion
                     else
                     {
                         resultOperacion = await _autorizacionBLL.GenerarAccessTokenYRefreshTokenConCredenciales(dtoUsuario.Email);
-                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Objeto = _mapper.Map<UsuarioResponseDTO>(resultOperacion.Objeto), Mensaje = "¡Autenticación exitosa!" };
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Valor = _mapper.Map<UsuarioResponseDTO>(resultOperacion.Valor), Mensaje = "¡Autenticación exitosa!" };
                     }
                 }
                 else
@@ -160,7 +160,7 @@ namespace Negocio.Implementacion
 
                     Usuario usuarioRestablecido = new Usuario
                     {
-                        IdUsuario = usuarioEncontrado.Objeto.IdUsuario,
+                        IdUsuario = usuarioEncontrado.Valor.IdUsuario,
                         GuidAcceso = newGuidAcceso,
                         FechaCreacionGuid = fechaCreacionGuid,
                         FechaExpiracionGuid = fechaExpiracionGuid,
@@ -179,12 +179,12 @@ namespace Negocio.Implementacion
                         string url = $"{_configuration.GetValue<string>("Frontend_URLs:Desarrollo")}/{$"password?guidAcceso={newGuidAcceso}"}"; //desde Frontend
                         //string url = $"{urlHost.Scheme}://{urlHost.Host}{urlHost.PathBase}{$"/api/Usuario/RestablecerContrasena?guidAcceso={newGuidAcceso}"}"; //desde Backend
 
-                        string htmlBody = string.Format(plantillaCorreo.Cuerpo, usuarioEncontrado.Objeto.NombreApellido, url);
+                        string htmlBody = string.Format(plantillaCorreo.Cuerpo, usuarioEncontrado.Valor.NombreApellido, url);
 
                         InfoCorreo correoDTO = new InfoCorreo()
                         {
                             Asunto = plantillaCorreo.Asunto,
-                            Para = usuarioEncontrado.Objeto.Email,
+                            Para = usuarioEncontrado.Valor.Email,
                             Contenido = htmlBody
                         };
 
@@ -225,7 +225,7 @@ namespace Negocio.Implementacion
                 var existeGuid = await ConsultarUsuarioPorGuid(guidAcceso);
                 if (!existeGuid.IsSuccess)
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = "Solicitud no existe o ya se encuentra inválida." };
-                else if (existeGuid.IsSuccess && (existeGuid.Objeto.GuidValidado || !existeGuid.Objeto.GuidActivo))
+                else if (existeGuid.IsSuccess && (existeGuid.Valor.GuidValidado || !existeGuid.Valor.GuidActivo))
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = "¡El enlace por el cual solicitaste el cambio de contraseña ya se encuentra inválido, ha expirado, o ya habías realizado un cambio de contraseña anteriormente usando este correo!" };
 
                 string contrasenaHash = _utilidades.EncriptarContraseña(nuevaContrasena);
@@ -250,7 +250,7 @@ namespace Negocio.Implementacion
                 bool respuesta = false;
                 var existeGuid = await ConsultarUsuarioPorGuid(guidAcceso);
 
-                if (existeGuid.IsSuccess && !existeGuid.Objeto.Confirmado)
+                if (existeGuid.IsSuccess && !existeGuid.Valor.Confirmado)
                     respuesta = await _usuarioDAL.ConfirmarCuenta(guidAcceso);
                 else
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = existeGuid.Mensaje };
@@ -275,13 +275,13 @@ namespace Negocio.Implementacion
             {
                 Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
                 {
-                    Objeto = await _usuarioDAL.ConsultarUsuarioPorGuid(guidUsuario)
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorGuid(guidUsuario)
                 };
 
-                if (resultOperacion.Objeto == null || !resultOperacion.Objeto.GuidActivo)
+                if (resultOperacion.Valor == null || !resultOperacion.Valor.GuidActivo)
                     return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "GUID no existe o ya se encuentra inválido. Favor solicite el reestablecimiento de su contraseña." };
                 else
-                    return new Respuesta<Usuario> { IsSuccess = true, Objeto = resultOperacion.Objeto, Mensaje = "¡GUID existe en la BD!" };
+                    return new Respuesta<Usuario> { IsSuccess = true, Valor = resultOperacion.Valor, Mensaje = "¡GUID existe en la BD!" };
             }
             catch (Exception e)
             {
@@ -296,13 +296,13 @@ namespace Negocio.Implementacion
             {
                 Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
                 {
-                    Objeto = await _usuarioDAL.ConsultarUsuarioPorId(email)
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorId(email)
                 };
 
-                if (resultOperacion.Objeto == null)
+                if (resultOperacion.Valor == null)
                     return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "Usuario no encontrado. Favor validar los datos ingresados." }; //usado para "AutenticarUsuario"
                 else
-                    return new Respuesta<Usuario> { IsSuccess = true, Objeto = resultOperacion.Objeto, Mensaje = "¡Usuario existe en la BD!" }; //usado para "RegistrarUsuario"
+                    return new Respuesta<Usuario> { IsSuccess = true, Valor = resultOperacion.Valor, Mensaje = "¡Usuario existe en la BD!" }; //usado para "RegistrarUsuario"
             }
             catch (Exception e)
             {
