@@ -44,7 +44,7 @@ namespace Negocio.Implementacion
             {
                 Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
                 {
-                    Valor = await _usuarioDAL.ConsultarUsuarioPorId(dtoUsuario.Email)
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorEmail(dtoUsuario.Email)
                 };
 
                 if (resultOperacion.Valor != null)
@@ -85,7 +85,7 @@ namespace Negocio.Implementacion
         {
             try
             {
-                var existeUsuario = await ConsultarUsuarioPorId(dtoUsuario.Email);
+                var existeUsuario = await ConsultarUsuarioPorEmail(dtoUsuario.Email);
 
                 if (existeUsuario.IsSuccess)
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"El correo electrónico proporcionado ya se encuentra registrado en el sistema. Por favor acceda con sus credenciales de acceso." };
@@ -151,7 +151,7 @@ namespace Negocio.Implementacion
         {
             try
             {
-                var usuarioEncontrado = await ConsultarUsuarioPorId(email);
+                var usuarioEncontrado = await ConsultarUsuarioPorEmail(email);
                 if (usuarioEncontrado.IsSuccess)
                 {
                     string newGuidAcceso = _utilidades.GenerarGuid();
@@ -290,13 +290,13 @@ namespace Negocio.Implementacion
         }
 
         //Consulta a un usuario por su Id (PK identificador de BD)
-        private async Task<Respuesta<Usuario>> ConsultarUsuarioPorId(string email)
+        private async Task<Respuesta<Usuario>> ConsultarUsuarioPorEmail(string email)
         {
             try
             {
                 Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
                 {
-                    Valor = await _usuarioDAL.ConsultarUsuarioPorId(email)
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorEmail(email)
                 };
 
                 if (resultOperacion.Valor == null)

@@ -11,7 +11,7 @@ namespace Datos.Interfaz
 
         Task<Usuario> ConsultarUsuarioPorGuid(string guidUsuario);
 
-        Task<Usuario> ConsultarUsuarioPorId(string email);
+        Task<Usuario> ConsultarUsuarioPorEmail(string email);
 
         Task<bool> RestablecerContrasena(Usuario usuarioRestablecido);
 

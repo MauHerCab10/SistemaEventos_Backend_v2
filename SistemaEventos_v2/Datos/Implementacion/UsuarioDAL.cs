@@ -113,13 +113,13 @@ namespace Datos.Implementacion
             }
         }
 
-        public async Task<Usuario> ConsultarUsuarioPorId(string email)
+        public async Task<Usuario> ConsultarUsuarioPorEmail(string email)
         {
             Usuario? usuario = null;
 
             using (SqlConnection connection = new SqlConnection(cadenaConexion))
             {
-                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorId", connection))
+                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorEmail", connection))
                 {
                     try
                     {

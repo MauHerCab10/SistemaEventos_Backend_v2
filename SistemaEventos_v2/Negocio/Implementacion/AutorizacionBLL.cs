@@ -38,7 +38,7 @@ namespace Negocio.Implementacion
         //Genera el AccessToken y el RefreshToken, usando las credenciales de acceso del usuario
         public async Task<Respuesta<Usuario>> GenerarAccessTokenYRefreshTokenConCredenciales(string email)
         {
-            var usuarioEncontrado = await _usuarioDAL.ConsultarUsuarioPorId(email);
+            var usuarioEncontrado = await _usuarioDAL.ConsultarUsuarioPorEmail(email);
             if (usuarioEncontrado == null)
                 return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "Usuario no encontrado. Favor validar los datos ingresados." };
 
@@ -132,9 +132,9 @@ namespace Negocio.Implementacion
             TokenValidationParameters validationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true, //verifica la firma del token usando la clave secreta (SecretKey). Esto garantiza que nadie haya modificado el token
-                ValidateIssuer = true, //comprueba que el token proviene del emisor correcto ("fullauth-api.com")
+                ValidateIssuer = true, //comprueba que el token proviene del emisor correcto ("sistemaeventos-api.com")
                 ValidIssuer = _configuration["JwtSettings:Issuer"], //valor esperado del emisor, tomado de appsettings.json (JwtSettings:Issuer)
-                ValidateAudience = true, //asegura que el token esté destinado a esta API
+                ValidateAudience = true, //asegura que el token esté destinado a esta API ("sistemaeventos-app.com")
                 ValidAudience = _configuration["JwtSettings:Audience"], //valor esperado de la audiencia (JwtSettings:Audience)
                 ValidateLifetime = false, //controla si el tiempo de vida del Token será verificado durante la validación (lo valido manualmente en AdministradorHeadersMiddleware)
                 ClockSkew = TimeSpan.Zero, //elimina la tolerancia por desfase de reloj
