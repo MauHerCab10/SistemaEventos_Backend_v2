@@ -53,10 +53,12 @@ namespace SistemaEventos.IoC
             //Inyección de Dependencias
             services.AddSingleton<IUtilidades, Utilidades>();
             services.AddScoped<ICookieService, CookieService>();
-            services.AddScoped<IUsuarioDAL, UsuarioDAL>();
-            services.AddScoped<IUsuarioBLL, UsuarioBLL>();
             services.AddScoped<IAutorizacionDAL, AutorizacionDAL>();
             services.AddScoped<IAutorizacionBLL, AutorizacionBLL>();
+            services.AddScoped<IUsuarioDAL, UsuarioDAL>();
+            services.AddScoped<IUsuarioBLL, UsuarioBLL>();
+            services.AddScoped<IEventoDAL, EventoDAL>();
+            services.AddScoped<IEventoBLL, EventoBLL>();
             services.AddScoped<IPlantillaCorreoDAL, PlantillaCorreoDAL>();
             services.AddScoped<IPlantillasCorreoService, PlantillasCorreoService>();
             services.Configure<ServidorEmail>(configuration.GetSection("ServidorEmail"));
