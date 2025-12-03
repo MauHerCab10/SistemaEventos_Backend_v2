@@ -17,6 +17,7 @@ namespace Negocio.Implementacion
             _eventoDAL = eventoDAL;
         }
 
+        //Devuelve todos los eventos disponibles en la BD
         public async Task<Respuesta<List<Evento>>> ConsultarEventosDisponibles(string idUsuario)
         {
             List<Evento>? listaEventosDisponibles = await _eventoDAL.ConsultarEventosDisponibles(idUsuario);
@@ -27,6 +28,7 @@ namespace Negocio.Implementacion
                 return new Respuesta<List<Evento>> { IsSuccess = true, Valor = listaEventosDisponibles };
         }
 
+        //Crea un nuevo evento en la BD
         public async Task<Respuesta<bool>> CrearEvento(Evento evento)
         {
             string fechaHora = $"{evento.Fecha} {evento.Hora}";
@@ -41,6 +43,7 @@ namespace Negocio.Implementacion
                 return new Respuesta<bool> { IsSuccess = false, Mensaje = "Error al momento de la creación del Evento." };
         }
 
+        //Actualiza un evento
         public async Task<Respuesta<bool>> ModificarEvento(Evento evento)
         {
             string fechaHora = $"{evento.Fecha} {evento.Hora}";
@@ -55,6 +58,7 @@ namespace Negocio.Implementacion
                 return new Respuesta<bool> { IsSuccess = false, Mensaje = "Error al momento de la actualización del Evento." };
         }
 
+        //Elimina un evento
         public async Task<Respuesta<bool>> EliminarEvento(int idEvento)
         {
             bool respuesta = await _eventoDAL.EliminarEvento(idEvento);
@@ -65,6 +69,7 @@ namespace Negocio.Implementacion
                 return new Respuesta<bool> { IsSuccess = false, Mensaje = "Error al momento de eliminar el Evento." };
         }
 
+        //Inscribe a un usuario a un evento
         public async Task<Respuesta<bool>> InscripcionAEvento(int idEvento, int idUsuario)
         {
             bool respuesta = await _eventoDAL.InscripcionAEvento(idEvento, idUsuario);
@@ -75,6 +80,7 @@ namespace Negocio.Implementacion
                 return new Respuesta<bool> { IsSuccess = false, Mensaje = "Error al momento de la incripción del usuario al Evento." };
         }
 
+        //Da de baja a un usuario de un evento
         public async Task<Respuesta<bool>> DimisionDeEvento(int idEvento, int idUsuario)
         {
             bool respuesta = await _eventoDAL.DimisionDeEvento(idEvento, idUsuario);
