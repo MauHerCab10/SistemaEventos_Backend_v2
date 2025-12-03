@@ -83,8 +83,8 @@ namespace SistemaEventos.Controllers
             });
         }
 
-        [HttpPost("ActualizarContrasenaAntigua")] //5to
-        public async Task<IActionResult> ActualizarContrasenaAntigua([FromBody] ActualizarContrasenaDTO contrasena)
+        [HttpPost("RestablecerContrasena")] //5to
+        public async Task<IActionResult> RestablecerContrasena([FromBody] ActualizarContrasenaDTO contrasena)
         {
             var resultado = await _usuario.ActualizarContrasenaAntigua(contrasena.GuidAcceso, contrasena.NuevaContrasena, contrasena.ConfirmacionContrasena);
             return Ok(new
@@ -95,7 +95,7 @@ namespace SistemaEventos.Controllers
         }
 
         //[Authorize]
-        //[HttpPost("ObtenerRefreshToken")] //6to (no lo uso en el Frontend, pero usarlo solo en caso de extrema de necesidad)
+        //[HttpPost("ObtenerRefreshToken")] //6to (no lo uso en el Frontend, pero usarlo solo en caso de q se requiera generar un nuevo AccesToken y RefreshToken al mismo tiempo)
         //public async Task<IActionResult> ObtenerRefreshToken()
         //{
         //    var idUsuario = HttpContext.Items["IdUsuario"]?.ToString();
