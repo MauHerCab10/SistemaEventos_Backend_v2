@@ -17,7 +17,10 @@ namespace Transversal.Helpers
 
             CreateMap<Usuario, UsuarioLoginRequestDTO>().ReverseMap();
 
-            CreateMap<Usuario, UsuarioResponseDTO>().ReverseMap();
+            CreateMap<Usuario, UsuarioResponseDTO>()
+                .ForMember(d => d.NombreUsuario, accion => accion.MapFrom(o => o.NombreApellido))
+                .ReverseMap()
+                .ForMember(d => d.NombreApellido, accion => accion.MapFrom(o => o.NombreUsuario));
             #endregion Usuario
         }
 

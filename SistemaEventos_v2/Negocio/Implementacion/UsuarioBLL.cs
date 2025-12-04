@@ -50,6 +50,7 @@ namespace Negocio.Implementacion
                 if (resultOperacion.Valor != null)
                 {
                     bool contrasenaValidada = _utilidades.VerificarContrasena(dtoUsuario.Contrasena, resultOperacion.Valor.ContrasenaHash);
+                    string nombreUsuario = resultOperacion.Valor.NombreApellido.Split(' ')[0];
 
                     if (!resultOperacion.Valor.Confirmado && !resultOperacion.Valor.Restablecer && !string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
                     {
@@ -66,6 +67,8 @@ namespace Negocio.Implementacion
                     else
                     {
                         resultOperacion = await _autorizacionBLL.GenerarAccessTokenYRefreshTokenConCredenciales(dtoUsuario.Email);
+                        resultOperacion.Valor.NombreApellido = nombreUsuario;
+
                         return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Valor = _mapper.Map<UsuarioResponseDTO>(resultOperacion.Valor), Mensaje = "¡Autenticación exitosa!" };
                     }
                 }
@@ -268,28 +271,7 @@ namespace Negocio.Implementacion
         #endregion Métodos PÚBLICOS
 
         #region Métodos PRIVADOS
-        //Consulta a un usuario por el GUID enviado dentro del link de un correo
-        private async Task<Respuesta<Usuario>> ConsultarUsuarioPorGuid(string guidUsuario)
-        {
-            try
-            {
-                Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
-                {
-                    Valor = await _usuarioDAL.ConsultarUsuarioPorGuid(guidUsuario)
-                };
-
-                if (resultOperacion.Valor == null || !resultOperacion.Valor.GuidActivo)
-                    return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "GUID no existe o ya se encuentra inválido. Favor solicite el reestablecimiento de su contraseña." };
-                else
-                    return new Respuesta<Usuario> { IsSuccess = true, Valor = resultOperacion.Valor, Mensaje = "¡GUID existe en la BD!" };
-            }
-            catch (Exception e)
-            {
-                return new Respuesta<Usuario> { IsSuccess = false, Mensaje = e.Message };
-            }
-        }
-
-        //Consulta a un usuario por su Id (PK identificador de BD)
+        //Consulta a un usuario por Email
         private async Task<Respuesta<Usuario>> ConsultarUsuarioPorEmail(string email)
         {
             try
@@ -303,6 +285,27 @@ namespace Negocio.Implementacion
                     return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "Usuario no encontrado. Favor validar los datos ingresados." }; //usado para "AutenticarUsuario"
                 else
                     return new Respuesta<Usuario> { IsSuccess = true, Valor = resultOperacion.Valor, Mensaje = "¡Usuario existe en la BD!" }; //usado para "RegistrarUsuario"
+            }
+            catch (Exception e)
+            {
+                return new Respuesta<Usuario> { IsSuccess = false, Mensaje = e.Message };
+            }
+        }
+
+        //Consulta a un usuario por el GUID (identificador único universal) enviado dentro del link de un correo
+        private async Task<Respuesta<Usuario>> ConsultarUsuarioPorGuid(string guidUsuario)
+        {
+            try
+            {
+                Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
+                {
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorGuid(guidUsuario)
+                };
+
+                if (resultOperacion.Valor == null || !resultOperacion.Valor.GuidActivo)
+                    return new Respuesta<Usuario> { IsSuccess = false, Mensaje = "GUID no existe o ya se encuentra inválido. Favor solicite el reestablecimiento de su contraseña." };
+                else
+                    return new Respuesta<Usuario> { IsSuccess = true, Valor = resultOperacion.Valor, Mensaje = "¡GUID existe en la BD!" };
             }
             catch (Exception e)
             {

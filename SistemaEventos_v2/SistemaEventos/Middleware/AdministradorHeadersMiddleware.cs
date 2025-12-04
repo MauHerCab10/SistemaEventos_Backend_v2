@@ -18,7 +18,7 @@ namespace SistemaEventos.Middleware
             _logger = logger;
         }
 
-        //Realiza validaciones previas al acceso sobre cualquier endpoint que requiera autorización
+        //Realiza validaciones previas de seguridad sobre TODAS las llamadas hacia cualquier endpoint
         public async Task InvokeAsync(HttpContext context, ICookieService cookies, IConfiguration configuration, IAutorizacionBLL autorizacion, IUtilidades utilidades)
         {
             try

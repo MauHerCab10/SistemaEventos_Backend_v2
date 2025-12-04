@@ -9,9 +9,9 @@ namespace Datos.Interfaz
     {
         Task<bool> RegistrarUsuario(Usuario usuario);
 
-        Task<Usuario> ConsultarUsuarioPorGuid(string guidUsuario);
-
         Task<Usuario> ConsultarUsuarioPorEmail(string email);
+
+        Task<Usuario> ConsultarUsuarioPorGuid(string guidUsuario);
 
         Task<bool> RestablecerContrasena(Usuario usuarioRestablecido);
 

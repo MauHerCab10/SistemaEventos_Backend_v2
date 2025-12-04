@@ -62,20 +62,19 @@ namespace Datos.Implementacion
             }
         }
 
-        public async Task<Usuario> ConsultarUsuarioPorGuid(string guidUsuario)
+        public async Task<Usuario> ConsultarUsuarioPorEmail(string email)
         {
             Usuario? usuario = null;
 
             using (SqlConnection connection = new SqlConnection(cadenaConexion))
             {
-                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorGuid", connection))
+                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorEmail", connection))
                 {
                     try
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.AddWithValue("@GuidUsuario", guidUsuario);
-
+                        command.Parameters.AddWithValue("@Email", email);
                         if (connection.State == ConnectionState.Closed)
                             await connection.OpenAsync();
 
@@ -113,19 +112,20 @@ namespace Datos.Implementacion
             }
         }
 
-        public async Task<Usuario> ConsultarUsuarioPorEmail(string email)
+        public async Task<Usuario> ConsultarUsuarioPorGuid(string guidUsuario)
         {
             Usuario? usuario = null;
 
             using (SqlConnection connection = new SqlConnection(cadenaConexion))
             {
-                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorEmail", connection))
+                using (SqlCommand command = new SqlCommand("sp_ConsultarUsuarioPorGuid", connection))
                 {
                     try
                     {
                         command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.AddWithValue("@Email", email);
+                        command.Parameters.AddWithValue("@GuidUsuario", guidUsuario);
+
                         if (connection.State == ConnectionState.Closed)
                             await connection.OpenAsync();
 

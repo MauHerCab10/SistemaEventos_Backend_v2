@@ -58,6 +58,7 @@ namespace SistemaEventos.Controllers
                     isSuccess = resultado.IsSuccess,
                     mensaje = resultado.Mensaje,
                     idUsuario = resultado.Valor.IdUsuario,
+                    nombreUsuario = resultado.Valor.NombreUsuario,
                     accessToken = resultado.Valor.AccessToken,
                     /*refreshToken = resultado.Valor.RefreshToken*/
                 });
