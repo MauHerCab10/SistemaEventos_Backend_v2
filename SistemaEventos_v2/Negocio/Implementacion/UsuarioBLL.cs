@@ -83,7 +83,7 @@ namespace Negocio.Implementacion
             }
         }
 
-        //Realiza todas las validaciones para permitir el registro (SignUp) del usuario en el sistema
+        //Realiza todas las validaciones para permitir el registro (Traditional SignUp) del usuario en el sistema
         public async Task<Respuesta<UsuarioResponseDTO>> RegistrarUsuario(UsuarioRegistroRequestDTO dtoUsuario)
         {
             try
@@ -262,6 +262,99 @@ namespace Negocio.Implementacion
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Mensaje = "¡Confirmación de cuenta realizada satisfactoriamente!" };
                 else
                     return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"¡ERROR! No se pudo confirmar la cuenta. {existeGuid.Mensaje}" };
+            }
+            catch (Exception e)
+            {
+                return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = e.Message };
+            }
+        }
+
+        //Realiza todas las validaciones para permitir el acceso (Google LogIn) del usuario al sistema
+        public async Task<Respuesta<UsuarioResponseDTO>> AutenticarUsuarioGoogle(UsuarioGoogleRequestDTO dtoUsuario)
+        {
+            try
+            {
+                Respuesta<Usuario> resultOperacion = new Respuesta<Usuario>
+                {
+                    Valor = await _usuarioDAL.ConsultarUsuarioPorEmail(dtoUsuario.Email)
+                };
+
+                if (resultOperacion.Valor != null)
+                {
+                    string nombreUsuario = resultOperacion.Valor.NombreApellido.Split(' ')[0];
+
+                    if (resultOperacion.Valor.Restablecer && !resultOperacion.Valor.Confirmado && string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
+                    {
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"Se ha solicitado restablecer su cuenta. Favor revise la bandeja de su correo '{dtoUsuario.Email}'." };
+                    }
+                    else
+                    {
+                        resultOperacion = await _autorizacionBLL.GenerarAccessTokenYRefreshTokenConCredenciales(dtoUsuario.Email);
+                        resultOperacion.Valor.NombreApellido = nombreUsuario;
+
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Valor = _mapper.Map<UsuarioResponseDTO>(resultOperacion.Valor), Mensaje = "¡Autenticación exitosa!" };
+                    }
+                }
+                else
+                {
+                    return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = "No se encontraron coincidencias con esas credenciales. Favor revisar los datos con los que está intentando acceder al sistema." };
+                }
+            }
+            catch (Exception e)
+            {
+                return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = e.Message };
+            }
+        }
+
+        //Realiza todas las validaciones para permitir el registro (Google SignUp) del usuario en el sistema
+        public async Task<Respuesta<UsuarioResponseDTO>> RegistrarUsuarioGoogle(UsuarioGoogleRequestDTO dtoUsuario)
+        {
+            try
+            {
+                var existeUsuario = await ConsultarUsuarioPorEmail(dtoUsuario.Email);
+
+                if (existeUsuario.IsSuccess)
+                    return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"El correo electrónico proporcionado ya se encuentra registrado en el sistema. Por favor acceda con otra cuenta." };
+
+                //Nuevo usuario
+                Usuario usuario = _mapper.Map<Usuario>(dtoUsuario);
+                usuario.ContrasenaHash = _utilidades.EncriptarContraseña(dtoUsuario.GoogleSub);
+                usuario.Restablecer = false;
+                usuario.Confirmado = false;
+                usuario.GuidAcceso = _utilidades.GenerarGuid();
+                usuario.FechaCreacionGuid = _utilidades.FechaHoraActualColombia();
+                usuario.FechaExpiracionGuid = usuario.FechaCreacionGuid.AddMinutes(_configuration.GetValue<int>("GuidAcceso_ExpirationTime"));
+                usuario.GuidValidado = false;
+
+                var respuesta = await _usuarioDAL.RegistrarUsuario(usuario);
+
+                if (respuesta)
+                {
+                    PlantillaCorreo? plantillaCorreo = await ObtenerPlantillaPorEnum(PlantillasCorreoEnum.ConfirmarCorreo);
+
+                    HttpRequest urlHost = _httpContextAccessor.HttpContext!.Request;
+                    string url = $"{urlHost.Scheme}://{urlHost.Host}{urlHost.PathBase}{$"/api/Usuario/ConfirmarCuenta?guidAcceso={usuario.GuidAcceso}"}";
+
+                    string htmlBody = string.Format(plantillaCorreo.Cuerpo, usuario.NombreApellido, url);
+
+                    InfoCorreo infoCorreo = new InfoCorreo()
+                    {
+                        Asunto = plantillaCorreo.Asunto,
+                        Para = usuario.Email,
+                        Contenido = htmlBody
+                    };
+
+                    bool correoEnviado = _utilidades.EnviarCorreo(infoCorreo);
+
+                    if (correoEnviado)
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = true, Mensaje = $"Su cuenta ha sido creada satisfactoriamente. Hemos enviado un mensaje al correo '{usuario.Email}' para confirmar su cuenta." };
+                    else
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"No fue posible enviar el correo a '{usuario.Email}'." };
+                }
+                else
+                {
+                    return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"No se pudo crear su cuenta." };
+                }
             }
             catch (Exception e)
             {

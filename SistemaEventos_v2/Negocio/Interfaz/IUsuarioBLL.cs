@@ -17,5 +17,9 @@ namespace Negocio.Interfaz
         Task<Respuesta<UsuarioResponseDTO>> ActualizarContrasenaAntigua(string guidAcceso, string nuevaContrasena, string confirmacionContrasena);
 
         Task<Respuesta<UsuarioResponseDTO>> ConfirmarCuenta(string guidAcceso);
+
+        Task<Respuesta<UsuarioResponseDTO>> AutenticarUsuarioGoogle(UsuarioGoogleRequestDTO dtoUsuario);
+
+        Task<Respuesta<UsuarioResponseDTO>> RegistrarUsuarioGoogle(UsuarioGoogleRequestDTO dtoUsuario);
     }
 }

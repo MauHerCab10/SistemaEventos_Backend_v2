@@ -21,6 +21,11 @@ namespace Transversal.Helpers
                 .ForMember(d => d.NombreUsuario, accion => accion.MapFrom(o => o.NombreApellido))
                 .ReverseMap()
                 .ForMember(d => d.NombreApellido, accion => accion.MapFrom(o => o.NombreUsuario));
+
+            CreateMap<UsuarioGoogleRequestDTO, Usuario>()
+                .ForMember(d => d.NombreApellido, accion => accion.MapFrom(o => o.Nombre))
+                .ReverseMap()
+                .ForMember(d => d.Nombre, accion => accion.MapFrom(o => o.NombreApellido));
             #endregion Usuario
         }
 

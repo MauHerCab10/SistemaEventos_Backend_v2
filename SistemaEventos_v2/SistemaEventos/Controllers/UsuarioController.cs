@@ -44,7 +44,7 @@ namespace SistemaEventos.Controllers
             return Redirect($"{_configuration.GetValue<string>("Frontend_URLs:Desarrollo")}/login?confirmacion={(resultado.IsSuccess ? "ok" : "error")}");
         }
 
-        [HttpPost("AutenticarUsuario")] //3ro (Sign In)
+        [HttpPost("AutenticarUsuario")] //3ro (Traditional Sign In)
         public async Task<IActionResult> AutenticarUsuario([FromBody] UsuarioLoginRequestDTO usuario)
         {
             var resultado = await _usuario.AutenticarUsuario(usuario);
@@ -73,7 +73,41 @@ namespace SistemaEventos.Controllers
             }
         }
 
-        [HttpPost("OlvidoSuContrasena")] //4to
+        [HttpPost("AutenticarUsuarioGoogle")] //4to (Google Sign In)
+        public async Task<IActionResult> AutenticarUsuarioGoogle([FromBody] UsuarioGoogleRequestDTO usuario)
+        {
+            var resultado = await _usuario.AutenticarUsuarioGoogle(usuario);
+            if (resultado.IsSuccess)
+            {
+                _cookies.SetCookieRefreshToken(resultado.Valor.RefreshToken);
+                return Ok(new
+                {
+                    isSuccess = resultado.IsSuccess,
+                    mensaje = resultado.Mensaje,
+                    idUsuario = resultado.Valor.IdUsuario,
+                    nombreUsuario = resultado.Valor.NombreUsuario,
+                    accessToken = resultado.Valor.AccessToken,
+                    /*refreshToken = resultado.Valor.RefreshToken*/
+                });
+            }
+            else
+            {
+                return Ok(new { isSuccess = resultado.IsSuccess, mensaje = resultado.Mensaje });
+            }
+        }
+
+        [HttpPost("RegistrarUsuarioGoogle")] //5to (Google Sign Up)
+        public async Task<IActionResult> RegistrarUsuarioGoogle([FromBody] UsuarioGoogleRequestDTO usuario)
+        {
+            var resultado = await _usuario.RegistrarUsuarioGoogle(usuario);
+            return Ok(new
+            {
+                isSuccess = resultado.IsSuccess,
+                mensaje = resultado.Mensaje
+            });
+        }
+
+        [HttpPost("OlvidoSuContrasena")] //6to
         public async Task<IActionResult> OlvidoSuContrasena([FromBody] EmailDTO email)
         {
             var resultado = await _usuario.OlvidoSuContrasena(email.Email);
@@ -84,7 +118,7 @@ namespace SistemaEventos.Controllers
             });
         }
 
-        [HttpPost("RestablecerContrasena")] //5to
+        [HttpPost("RestablecerContrasena")] //7mo
         public async Task<IActionResult> RestablecerContrasena([FromBody] ActualizarContrasenaDTO contrasena)
         {
             var resultado = await _usuario.ActualizarContrasenaAntigua(contrasena.GuidAcceso, contrasena.NuevaContrasena, contrasena.ConfirmacionContrasena);
@@ -96,7 +130,7 @@ namespace SistemaEventos.Controllers
         }
 
         //[Authorize]
-        //[HttpPost("ObtenerRefreshToken")] //6to (no lo uso en el Frontend, pero usarlo solo en caso de q se requiera generar un nuevo AccesToken y RefreshToken al mismo tiempo)
+        //[HttpPost("ObtenerRefreshToken")] //8vo (no lo uso en el Frontend, pero usarlo solo en caso de q se requiera generar un nuevo AccesToken y RefreshToken al mismo tiempo)
         //public async Task<IActionResult> ObtenerRefreshToken()
         //{
         //    var idUsuario = HttpContext.Items["IdUsuario"]?.ToString();
@@ -125,7 +159,7 @@ namespace SistemaEventos.Controllers
         //}
 
         [Authorize]
-        [HttpPost("CerrarSesion")] //6to
+        [HttpPost("CerrarSesion")] //8vo
         public async Task<IActionResult> CerrarSesion()
         {
             var idUsuario = HttpContext.Items["IdUsuario"]?.ToString();
@@ -139,7 +173,7 @@ namespace SistemaEventos.Controllers
         }
 
         [Authorize]
-        [HttpGet("Ping")] //7mo (usar solo para PRUEBAS)
+        [HttpGet("Ping")] //9no (usar solo para PRUEBAS)
         public IActionResult Ping()
         {
             var idUsuario = HttpContext.Items["IdUsuario"]?.ToString();
