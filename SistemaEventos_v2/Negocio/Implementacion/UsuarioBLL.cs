@@ -283,7 +283,11 @@ namespace Negocio.Implementacion
                 {
                     string nombreUsuario = resultOperacion.Valor.NombreApellido.Split(' ')[0];
 
-                    if (resultOperacion.Valor.Restablecer && !resultOperacion.Valor.Confirmado && string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
+                    if (!resultOperacion.Valor.Confirmado && !resultOperacion.Valor.Restablecer && !string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
+                    {
+                        return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"Falta por confirmar su cuenta. Se envió un correo de solicitud de confirmación a '{dtoUsuario.Email}'." };
+                    }
+                    else if (resultOperacion.Valor.Restablecer && !resultOperacion.Valor.Confirmado && string.IsNullOrEmpty(resultOperacion.Valor.ContrasenaHash))
                     {
                         return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = $"Se ha solicitado restablecer su cuenta. Favor revise la bandeja de su correo '{dtoUsuario.Email}'." };
                     }
