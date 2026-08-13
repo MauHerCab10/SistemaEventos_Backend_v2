@@ -301,7 +301,7 @@ namespace Negocio.Implementacion
                 }
                 else
                 {
-                    return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = "No se encontraron coincidencias con esas credenciales. Favor revisar los datos con los que está intentando acceder al sistema." };
+                    return new Respuesta<UsuarioResponseDTO> { IsSuccess = false, Mensaje = "No se encontraron coincidencias con esas credenciales. Favor revisar si la cuenta con la que está intentando acceder al sistema es la correcta." };
                 }
             }
             catch (Exception e)
